@@ -1,11 +1,15 @@
 package com.test;
 
 //add imports for io, util.Scanner and util.ArrayList
-import java.io.*;
-import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  * Demonstrate filing reading and writing by reading from one file and writing
@@ -15,35 +19,31 @@ import java.util.NoSuchElementException;
  */
 public class FileIO {
 	/**
-	 * @param args
-	 *            the command line arguments
-	 * @throws java.io.IOException
-	 *             reasons why
+	 * @param args the command line arguments
+	 * @throws java.io.IOException reasons why
 	 */
 	public static void main(String[] args) {
-		// set up an array list to use as storage
 		ArrayList<Integer> buffer = new ArrayList<>();
-		// check our current working directory
 		System.out.println("Current working directory: " + System.getProperty("user.dir"));
-		// create a path String to the start of the file locations (discuss seperators)
 		String path = "src" + File.separator + "fileio" + File.separator;
 		System.out.println("Path to file: " + path);
-		// open -> read -> close
-		// open the data.txt file
 		try {
-			ReallyBadClass rbc =  new ReallyBadClass();
-
-		File dataFile = new File(path + "data.txt");
-		// check if it exists
-		dataFile.exists();
+			File dataFile = new File(path + "data.txt");
+			if (!dataFile.exists()) {
+				throw new FileNotFoundException();
+			}
 			System.out.println("Reading file...");
-			
 			Scanner input = new Scanner(dataFile);
 			while (input.hasNext()) {
-				Integer line = input.nextInt();
-				buffer.add(line);
-				System.out.println(line);
-			}			
+				try {
+					Integer line = input.nextInt();
+					buffer.add(line);
+					System.out.println(line);
+				} catch (InputMismatchException ex) {
+					System.out.println("Handled InputMismatchException while reading the file....");
+					input.next();
+				}
+			}
 			input.close();
 			FileWriter fw = new FileWriter(path + "new_data.txt", true);
 			PrintWriter output = new PrintWriter(fw);
@@ -54,32 +54,18 @@ public class FileIO {
 				System.out.println(line);
 			}
 			output.close();
-//		} else {
-//			System.out.println("File not found for: " + path + "data.txt");
-//			System.exit(0);
-//		}
 		} catch (FileNotFoundException fnfe) {
 			System.out.println("fnfe: " + fnfe.getMessage());
-//			fnfe.printStackTrace();
-			// TODO: handle exception
 		} catch (IOException ioe) {
 			System.out.println("ioe: " + ioe.getMessage());
-//			ioe.printStackTrace();
-			// TODO: handle exception
 		} catch (IllegalStateException nse) {
-			// TODO: handle exception
 			System.out.println("IllegalStateException - if this scanner is closed ");
-//			nse.printStackTrace();
 		} catch (InputMismatchException ime) {
-			// TODO: handle exception
-//			throw new 
-			System.out.println("InputMismatchException - if the next token does not match the Integer regular expression, or is out of range " );
-//			ime.printStackTrace();
-		}		
-		catch (NoSuchElementException nse) {
+			System.out.println(
+					"InputMismatchException - if the next token does not match the Integer regular expression, or is out of range ");
+		} catch (NoSuchElementException nse) {
 			// TODO: handle exception
 			System.out.println("nse: if input is exhausted " + nse.getMessage());
-//			nse.printStackTrace();
 		} finally {
 			System.out.println(" In finaly");
 		}
